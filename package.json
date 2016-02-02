@@ -1,8 +1,8 @@
 {
   "name": "redux-observers",
   "version": "0.1.0",
-  "main": "./build/index.js",
-  "jsnext:main": "./src/index.js",
+  "main": "lib/index.js",
+  "jsnext:main": "src/index.js",
   "scripts": {
     "build": "babel src --out-dir lib",
     "clean": "rm -rf lib",
