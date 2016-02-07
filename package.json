@@ -1,5 +1,6 @@
 {
   "name": "redux-observers",
+  "description": "Observe Redux state changes and dispatch actions on change",
   "version": "1.0.0",
   "author": "Alex Diaconu <alex@psi.io>",
   "license": "MIT",

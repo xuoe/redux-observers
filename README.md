@@ -4,6 +4,8 @@
 [![Coverage Status](https://img.shields.io/coveralls/xuoe/redux-observers.svg?style=flat-square)](https://coveralls.io/r/xuoe/redux-observers)
 [![NPM Version](https://img.shields.io/npm/v/redux-observers.svg?style=flat-square)](https://www.npmjs.com/package/redux-observers)
 
+Observe [Redux](http://redux.js.org/) state changes and dispatch actions on change.
+
 ## Installation
 
 Assuming you're using `npm` and a module bundler capable of consuming CommonJS
