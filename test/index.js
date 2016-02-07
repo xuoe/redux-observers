@@ -175,13 +175,18 @@ tape('observe()', t => {
     return { type: TEST, payload }
   }
 
+  const keyObserver = key => {
+    return observer(
+      (state => state.key),
+      (dispatch, a, b) => {
+        dispatch(testAction({ [key]: [a, b] }))
+      }
+    )
+  }
+
   const observers = [
-    observer(state => state.key, (dispatch, a, b) => {
-      dispatch(testAction({ a: [a, b] }))
-    }),
-    observer(state => state.key, (dispatch, a, b) => {
-      dispatch(testAction({ b: [a, b] }))
-    })
+    keyObserver('a'),
+    keyObserver('b')
   ]
 
   const store = createStore(reducer, {})
@@ -217,7 +222,7 @@ tape('observe()', t => {
     store.dispatch(testAction({ key: test.key }))
     t.deepEqual(
       store.getState(), test.state,
-      'dispatches actions without the stack overflowing'
+      'dispatches actions in the correct order'
     )
   })
 

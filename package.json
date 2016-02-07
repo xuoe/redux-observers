@@ -1,29 +1,39 @@
 {
   "name": "redux-observers",
-  "version": "0.1.0",
+  "version": "1.0.0",
+  "author": "Alex Diaconu <alex@psi.io>",
+  "license": "MIT",
   "main": "lib/index.js",
   "jsnext:main": "src/index.js",
   "scripts": {
     "build": "babel src --out-dir lib",
     "clean": "rm -rf lib",
     "lint": "eslint src test",
-    "test": "tape -r babel-core/register test | tap-min",
+    "test": "tape -r babel-core/register test",
     "check": "npm run lint && npm run test",
-    "install": "npm run clean && npm run build"
+    "coverage": "babel-node $(npm bin)/isparta cover test/index.js",
+    "coveralls": "npm run coverage && coveralls < coverage/lcov.info",
+    "prepublish": "npm run clean && npm run check && npm run build"
   },
-  "author": "Alex Diaconu",
-  "license": "MIT",
   "devDependencies": {
     "babel-cli": "^6.4.5",
     "babel-core": "^6.4.5",
     "babel-eslint": "^5.0.0-beta6",
     "babel-preset-es2015": "^6.3.13",
-    "babel-preset-stage-0": "^6.3.13",
+    "coveralls": "^2.11.6",
     "eslint": "^1.10.3",
     "eslint-config-rackt": "^1.1.1",
+    "isparta": "^4.0.0",
     "redux": "^3.0.6",
     "sinon": "^1.17.3",
-    "tap-min": "^1.0.0",
     "tape": "^4.4.0"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/xuoe/redux-observers.git"
+  },
+  "keywords": [
+    "redux",
+    "observer"
+  ]
 }
