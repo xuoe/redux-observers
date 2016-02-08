@@ -1,5 +1,7 @@
 src
 test
+coverage
+.envrc
 .babelrc
 .eslintignore
 .eslintrc
