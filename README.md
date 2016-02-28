@@ -11,7 +11,7 @@ Observe [Redux](http://redux.js.org/) state changes and dispatch actions on chan
 Assuming you're using `npm` and a module bundler capable of consuming CommonJS
 modules:
 
-`npm install --save redux-observers`
+`npm install redux-observers --save`
 
 ## Usage
 First, create a `store` object as you normally would, then create the necessary
@@ -22,21 +22,21 @@ import { observer, observe } from 'redux-observers'
 
 const myObserver = observer(
   state => state.slice.of.interest,
-  (dispatch, prev, current) => {
-    expect(prev).to.be.ok()
-    expect(current).to.not.eql(prev)
+  (dispatch, current, previous) => {
+    expect(previous).to.be.ok()
+    expect(current).to.not.eql(previous)
     dispatch({ type: 'SLICE_CHANGE', payload: {...} })
   }
 )
 
-observe(store, myObserver, ...otherObservers)
+observe(store, [myObserver, ...myOtherObservers])
 ```
 
-That's it.
+That's the gist of it.
 
 ## API
 
-#### `observer([mapper], [dispatcher], [equals]) => observerFunc`
+#### `observer([mapper], dispatcher, [options]) => observerFunc`
 
 Creates an observer.
 
@@ -48,21 +48,67 @@ Creates an observer.
 
     If no `mapper` is provided, the entire store state is mapped by default.
 
-  - `dispatcher(dispatch, previousState, currentState)` *(Function)*
+  - `dispatcher(dispatch, currentState, previousState)` *(Function)*
 
     Called whenever the mapped-over state changes.
 
-  - `equals(previousState, currentState) => Boolean` *(Function)*
+  - `options` *(Object)*
 
-    Specifies how the previous state should be compared with the current one. Its
-    return value must be a Boolean, which is used to determine whether `dispatcher`
-    should be called. Note that, by default, values are compared in a shallow manner,
-    which suffices for most use cases.
-
+    A local options object, whose values are applicable only in the context of
+    the returned `observerFunc`. Any option provided here takes precedence over
+    its [global](#observestore-observers-options--unsubscribefunc)
+    and [default](#options) equivalents.
 
 _Note that if care is not exercised, infinite cycles may be created between
 a `mapper` and a `dispatcher`._
 
-####  `observe(store, ...observers)`
+#### `observe(store, observers, [options]) => unsubscribeFunc`
 
-Listens for `store` updates and applies given `observers` over the `store` state.
+Listens for `store` updates and applies given `observers` over the `store`
+state.
+
+ - `store` *(Object)*
+
+    The Redux store object.
+
+ - `observers` *(Array)*
+
+    An array of (observer) functions, where each member must be the result of
+    calling `observer()`.
+
+ - `options` *(Object)*
+
+    A global options object, whose values are applicable only in the context
+    of the provided `observers` (i.e., `observe()`ing a `store` multiple times
+    using the same `observers`, but providing different global options, results
+    in a different behavior, as prescribed by that `options` object). Any option
+    provided here takes precedence over [its default value](#options).
+
+##### Options
+
+  A plain object that may be provided to `observe(,, options)` to describe how
+  a set of observers must behave, or to `observer(,, options)` to describe how
+  a particular observer must behave.
+
+  - `skipInitialCall` *(Boolean, defaults to `true`)*
+
+    Specifies whether dispatchers must be called immediately after Redux
+    dispatches its `@@redux/INIT` action.
+
+    If set to `false`, dispatchers are initially called with an `undefined`
+    "previous" state; otherwise, and by default, a dispatcher is only called
+    after the "previous" state is set (i.e., after `@@redux/INIT` is
+    dispatched and the store's reducers had a chance to return their initial
+    state).
+
+  - `equals: (currentState, previousState) => Boolean` *(Function, defaults to `shallowEquals`)*
+
+    Specifies how the previous state should be compared with the current one. Its
+    return value must be a Boolean, which is used to determine whether a dispatcher
+    should be called. Note that, by default, values are compared in a shallow manner,
+    which suffices for most use cases.
+
+#### `shallowEquals(a, b) => Boolean`
+
+Helper used internally to determine whether two state values (not just plain
+objects) are equal.

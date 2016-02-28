@@ -1,9 +1,24 @@
-import { observe, observer } from '../src'
+import { observe, observer, shallowEquals } from '../src'
 import { createStore } from 'redux'
 import tape from 'tape'
 import sinon from 'sinon'
 
 const noop = () => {}
+const defaultGlobals = {
+  equals: shallowEquals,
+  skipInitialCall: true
+}
+
+const TEST = 'TEST'
+const testAction = payload => ({ type: TEST, payload })
+const testReducer = () => {
+  return (state = {}, action) => {
+    if (action.type === TEST) {
+      return Object.assign({}, state, action.payload)
+    }
+    return state
+  }
+}
 
 tape('observer (equal states)', t => {
   const next = [
@@ -25,18 +40,14 @@ tape('observer (equal states)', t => {
 
   const spy = sinon.spy()
   const fn = observer(state => state, spy)
-  fn(current, noop)
-  t.notOk(
-    spy.called,
-    'must not call dispatcher until initial state is set'
-  )
 
+  fn(current, noop, defaultGlobals)
   next.forEach(n => {
     spy.reset()
-    fn(n, noop)
+    fn(n, noop, defaultGlobals)
     t.notOk(
       spy.called,
-      'must call dispatcher only when the state changes'
+      'must call dispatcher when the state changes'
     )
     current = n
   })
@@ -44,7 +55,7 @@ tape('observer (equal states)', t => {
   t.end()
 })
 
-tape('observer (non-equal states)', t => {
+tape('observer (unequal states)', t => {
   let current = {}
   const next = [
     {
@@ -64,26 +75,23 @@ tape('observer (non-equal states)', t => {
 
   const spy = sinon.spy()
   const fn = observer(state => state, spy)
-  fn(current, noop)
-  t.notOk(
-    spy.called,
-    'must not call dispatcher until initial state is set'
-  )
 
+  fn(current, noop, defaultGlobals)
   next.forEach(n => {
     spy.reset()
-    fn(n, noop)
+    fn(n, noop, defaultGlobals)
+    const previous = current
+    current = n
     t.ok(
-      spy.calledWith(noop, current, n),
+      spy.calledWith(noop, current, previous),
       'must call dispatcher with next state'
     )
-    current = n
   })
 
   t.end()
 })
 
-tape('observer with custom `equals`', t => {
+tape('observer with user-defined `equals`', t => {
   let current = {}
   const states = [
     {
@@ -102,33 +110,25 @@ tape('observer with custom `equals`', t => {
 
   const alwaysEqual = () => true
   const spy = sinon.spy()
-  let fn = observer(state => state, spy, alwaysEqual)
+  let globals = { equals: alwaysEqual, skipInitialCall: true }
+  let fn = observer(state => state, spy)
 
-  fn(current, noop)
-  t.notOk(
-    spy.called,
-    'must not call dispatcher until initial state is set'
-  )
-
+  fn(current, noop, globals)
   states.forEach(next => {
-    fn(next, noop)
-    t.notOk(spy.called, 'must call dispatcher if `equals` returns true')
+    fn(next, noop, globals)
+    t.notOk(spy.called, 'must not call dispatcher if `equals` returns false')
     current = next
   })
 
   const alwaysNotEqual = () => false
+  globals.equals = alwaysNotEqual
   spy.reset()
-  fn = observer(state => state, spy, alwaysNotEqual)
+  fn = observer(state => state, spy)
 
-  fn(current, noop)
-  t.notOk(
-    spy.called,
-    'must not call dispatcher until initial state is set'
-  )
-
+  fn(current, noop, globals)
   states.forEach(next => {
     spy.reset()
-    fn(next, noop)
+    fn(next, noop, globals)
     t.ok(spy.called, 'must call dispatcher if `equals` returns true')
   })
 
@@ -145,35 +145,109 @@ tape('observer with null mapper', t => {
   const spy = sinon.spy()
   let fn = observer(null, spy)
 
-  fn(current, noop)
-  t.notOk(
-    spy.called,
-    'must not call dispatcher until initial state is set'
-  )
-
+  fn(current, noop, defaultGlobals)
   states.forEach(next => {
     spy.reset()
-    fn(next, noop)
-    t.ok(spy.calledWith(noop, current, next), 'must map values 1:1')
+    fn(next, noop, defaultGlobals)
+    const previous = current
     current = next
+    t.ok(spy.calledWith(noop, current, previous), 'must map values 1:1')
   })
 
   t.end()
 })
 
-tape('observe()', t => {
+tape('observer with null dispatcher', t => {
+  t.throws(
+    () => observer(null, null),
+    /dispatcher/,
+    'throws if no `dispatcher` is given'
+  )
 
-  const TEST = 'TEST'
-  function reducer(state = {}, action) {
-    if (action.type === TEST) {
-      return Object.assign({}, state, action.payload)
-    }
-    return state
+  t.doesNotThrow(
+    () => observer(null, noop),
+    "doesn't throws if `dispatcher` given"
+  )
+
+  t.end()
+})
+
+tape('observe() arguments', t => {
+  const validStore = ({
+    dispatch: noop,
+    getState: noop,
+    subscribe: noop
+  })
+
+  t.throws(
+    () => observe(null, []),
+      /expected a Redux store/,
+      'throws if `store` object is not provided'
+  )
+
+  t.throws(
+    () => observe({}, []),
+      /expected a Redux store/,
+      'throws if `store` object is invalid'
+  )
+
+  t.doesNotThrow(
+    () => observe(validStore, []),
+      "doesn't throw if `store` object is valid"
+  )
+
+  t.throws(
+    () => observe(validStore, [() => {}]),
+      /expected an array/,
+      'throws if `observers` array is invalid'
+  )
+
+  t.throws(
+    () => observe(validStore),
+      /expected an array/,
+      'throws if `observers` array is absent'
+  )
+
+  t.doesNotThrow(
+    () => observe(validStore, [observer(null, noop)]),
+      "doesn't throw if `observers` array is valid"
+  )
+
+  t.end()
+})
+
+tape('observe() options', t => {
+  let store = createStore(testReducer(), {})
+  const spy = sinon.spy()
+  const action = testAction('test')
+  const reset = () => {
+    store = createStore(testReducer(), {})
+    spy.reset()
   }
 
-  function testAction(payload) {
-    return { type: TEST, payload }
-  }
+  // Default options.
+  observe(store, [observer(null, spy)])
+  store.dispatch(action)
+  t.equal(spy.callCount, 1, 'uses default options if none provided')
+
+  // Defaults + globals.
+  reset()
+  observe(store, [observer(null, spy)], { skipInitialCall: false })
+  store.dispatch(action)
+  t.equal(spy.callCount, 2, 'uses observer-global options if provided')
+
+  // Defaults + globals + locals.
+  reset()
+  observe(store, [
+    observer(null, spy, { skipInitialCall: true })
+  ], { skipInitialCall: false })
+  store.dispatch(action)
+  t.equal(spy.callCount, 1, 'uses observer-local options if provided')
+
+  t.end()
+})
+
+tape('integration', t => {
 
   const keyObserver = key => {
     return observer(
@@ -189,14 +263,16 @@ tape('observe()', t => {
     keyObserver('b')
   ]
 
-  const store = createStore(reducer, {})
-  observe(store, ...observers)
+  const store = createStore(testReducer(), {})
+  observe(store, observers)
   store.dispatch(testAction({ key: 'init' }))
 
   const tests = [
     {
       key: 'init',
       state: {
+        a: ['init', undefined],
+        b: ['init', undefined],
         key: 'init'
       }
     },
@@ -204,16 +280,16 @@ tape('observe()', t => {
       key: 'then',
       state: {
         key: 'then',
-        a: ['init', 'then'],
-        b: ['init', 'then']
+        a: ['then', 'init'],
+        b: ['then', 'init']
       }
     },
     {
       key: { test: 'later' },
       state: {
         key: { test: 'later' },
-        a: ['then', { test: 'later' }],
-        b: ['then', { test: 'later' }]
+        a: [{ test: 'later' }, 'then'],
+        b: [{ test: 'later' }, 'then']
       }
     }
   ]
