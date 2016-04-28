@@ -1,6 +1,5 @@
-const SKIP = 'skipInitialCall'
-const EQUALS = 'equals'
-const OBSERVER = '__OBSERVER__'
+import _ from './helpers'
+import { SKIP, EQUALS, OBSERVER } from './constants'
 
 // Default options.
 const defaults = {
@@ -9,14 +8,14 @@ const defaults = {
 }
 
 export function observe(store, observers, options = {}) {
-  if (!isStore(store)) {
+  if (!_.isStore(store)) {
     throw new Error(
       'observers: invalid `store` argument; ' +
       'expected a Redux store object.'
     )
   }
 
-  if (!isObserverArray(observers)) {
+  if (!_.isObserverArray(observers)) {
     throw new Error(
       'observers: invalid `observers` argument; ' +
       'expected an array of observer() functions.'
@@ -25,7 +24,7 @@ export function observe(store, observers, options = {}) {
 
   // Create globally-applicable options for the given observer set.
   const globals = [SKIP, EQUALS].reduce((globals, key) => {
-    globals[key] = has.call(options, key)
+    globals[key] = _.hasKey(options, key)
       ? options[key]
       : defaults[key]
     return globals
@@ -58,7 +57,7 @@ export function observer(mapper, dispatcher, locals = {}) {
     // return their initial state.
     if (!initialized) {
       initialized = true
-      const skip = has.call(locals, SKIP) ? !!locals[SKIP] : globals[SKIP]
+      const skip = _.hasKey(locals, SKIP) ? !!locals[SKIP] : globals[SKIP]
       if (skip) {
         return
       }
@@ -91,6 +90,10 @@ export function shallowEquals(a, b) {
     return false
   }
 
+  if (_.isPrimitive(a) || _.isPrimitive(b)) {
+    return a === b
+  }
+
   const [aKeys, bKeys] = [Object.keys(a), Object.keys(b)]
   if (aKeys.length !== bKeys.length) {
     return false
@@ -98,31 +101,10 @@ export function shallowEquals(a, b) {
 
   for (let i = 0; i < bKeys.length; i++) {
     let key = bKeys[i]
-    if (!has.call(a, key) || a[key] !== b[key]) {
+    if (!_.hasKey(a, key) || a[key] !== b[key]) {
       return false
     }
   }
 
   return true
 }
-
-const storeKeys = ['dispatch', 'getState', 'subscribe']
-function isStore(val) {
-  if (!val) {
-    return false
-  }
-  return storeKeys.every(key => has.call(val, key))
-}
-
-function isObserverArray(val) {
-  if (!Array.isArray(val)) {
-    return false
-  }
-  return val.every(isObserver)
-}
-
-function isObserver(val) {
-  return typeof val === 'function' && val[OBSERVER]
-}
-
-const has = Object.prototype.hasOwnProperty

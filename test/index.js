@@ -20,6 +20,28 @@ const testReducer = () => {
   }
 }
 
+tape('shallowEquals()', t => {
+  const tests = [
+    [false, { a: 'a' }, { b: 'b' }],
+    [true, { a: 'a' }, { a: 'a' }],
+    [false, { a: 'a' }, { a: 'a', b: 'b' }],
+    [true, 'a', 'a'],
+    [false, 'a', 'b'],
+    [false, 10, 5],
+    [false, 10, '5'],
+    [true, [1, 2, 3], [1, 2, 3]],
+    [false, [1, 2, 3], [1, 2]],
+    [false, true, undefined],
+    [true, undefined, undefined]
+  ]
+
+  tests.forEach(test => {
+    t.equal(test[0], shallowEquals(test[1], test[2]))
+  })
+
+  t.end()
+})
+
 tape('observer (equal states)', t => {
   const next = [
     {
