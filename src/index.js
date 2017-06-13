@@ -82,14 +82,6 @@ export function shallowEquals(a, b) {
     return true
   }
 
-  // Guard against undefined values.
-  //
-  // Note: even though Redux expects reducers to never return `undefined`,
-  // internally-mapped state slices (via `mapper`) may be set to `undefined`.
-  if (a === undefined || b === undefined) {
-    return false
-  }
-
   if (_.isPrimitive(a) || _.isPrimitive(b)) {
     return a === b
   }

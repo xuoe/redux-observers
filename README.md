@@ -105,10 +105,11 @@ state.
 
     Specifies how the previous state should be compared with the current one. Its
     return value must be a Boolean, which is used to determine whether a dispatcher
-    should be called. Note that, by default, values are compared in a shallow manner,
-    which suffices for most use cases.
+    should be called. Note that, by default, values are compared in a shallow
+    manner via [`shallowEquals()`](#shallowequalsa-b--boolean), which should
+    satisfy the common use case.
 
 #### `shallowEquals(a, b) => Boolean`
 
-Helper used internally to determine whether two state values (not just plain
-objects) are equal.
+The default comparsion helper. It determines whether two state values (be they
+plain objects or primitive values) are equal.

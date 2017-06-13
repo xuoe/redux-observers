@@ -31,8 +31,12 @@ tape('shallowEquals()', t => {
     [false, 10, '5'],
     [true, [1, 2, 3], [1, 2, 3]],
     [false, [1, 2, 3], [1, 2]],
+    [true, undefined, undefined],
     [false, true, undefined],
-    [true, undefined, undefined]
+    [true, null, null],
+    [false, null, undefined],
+    [false, null, ''],
+    [false, {}, null]
   ]
 
   tests.forEach(test => {

@@ -23,8 +23,11 @@ function isObserver(val) {
   return typeof val === 'function' && val[OBSERVER]
 }
 
-const primitives = ['string', 'number', 'boolean']
+const primitives = ['string', 'number', 'boolean', 'symbol']
 function isPrimitive(val) {
+  if (val === undefined || val === null) {
+    return true
+  }
   return primitives.some(p => typeof val === p)
 }
 
@@ -32,4 +35,3 @@ const has = Object.prototype.hasOwnProperty
 function hasKey(obj, key) {
   return has.call(obj, key)
 }
-
