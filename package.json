@@ -6,6 +6,7 @@
   "license": "MIT",
   "main": "lib/index.js",
   "jsnext:main": "src/index.js",
+  "types": "index.d.ts",
   "scripts": {
     "build": "babel src --out-dir lib",
     "clean": "rimraf lib coverage",
@@ -38,5 +39,8 @@
   "keywords": [
     "redux",
     "observer"
-  ]
+  ],
+  "dependencies": {
+    "@types/redux": "^3.6.0"
+  }
 }
