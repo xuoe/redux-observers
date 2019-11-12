@@ -13,6 +13,9 @@ modules:
 
 `npm install redux-observers --save`
 
+**Note** that the package supports only redux `3.x.x`. There are no plans for
+adding `4.x.x` support as of this writing.
+
 ## Usage
 First, create a `store` object as you normally would, then create the necessary
 observers and pass them as arguments to `observe()`:
