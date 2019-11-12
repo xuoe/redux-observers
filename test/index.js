@@ -69,7 +69,7 @@ tape('observer (equal states)', t => {
 
   fn(current, noop, defaultGlobals)
   next.forEach(n => {
-    spy.reset()
+    spy.resetHistory()
     fn(n, noop, defaultGlobals)
     t.notOk(
       spy.called,
@@ -104,7 +104,7 @@ tape('observer (unequal states)', t => {
 
   fn(current, noop, defaultGlobals)
   next.forEach(n => {
-    spy.reset()
+    spy.resetHistory()
     fn(n, noop, defaultGlobals)
     const previous = current
     current = n
@@ -148,12 +148,12 @@ tape('observer with user-defined `equals`', t => {
 
   const alwaysNotEqual = () => false
   globals.equals = alwaysNotEqual
-  spy.reset()
+  spy.resetHistory()
   fn = observer(state => state, spy)
 
   fn(current, noop, globals)
   states.forEach(next => {
-    spy.reset()
+    spy.resetHistory()
     fn(next, noop, globals)
     t.ok(spy.called, 'must call dispatcher if `equals` returns true')
   })
@@ -173,7 +173,7 @@ tape('observer with null mapper', t => {
 
   fn(current, noop, defaultGlobals)
   states.forEach(next => {
-    spy.reset()
+    spy.resetHistory()
     fn(next, noop, defaultGlobals)
     const previous = current
     current = next
@@ -248,7 +248,7 @@ tape('observe() options', t => {
   const action = testAction('test')
   const reset = () => {
     store = createStore(testReducer(), {})
-    spy.reset()
+    spy.resetHistory()
   }
 
   // Default options.

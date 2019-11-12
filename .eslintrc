@@ -1,5 +1,5 @@
 {
-    "extends": "rackt",
+    "extends": "eslint:recommended",
     "rules": {
         "array-bracket-spacing": [2, "never"],
         "eqeqeq": [1, "smart"]
@@ -8,5 +8,9 @@
         "browser": true,
         "node": true,
         "es6": true
+    },
+    "parser": "babel-eslint",
+    "parserOptions": {
+        "sourceType": "module"
     }
 }

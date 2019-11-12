@@ -6,3 +6,4 @@ coverage
 .eslintignore
 .eslintrc
 .travis.yml
+.nyc_output
