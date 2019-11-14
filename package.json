@@ -41,6 +41,9 @@
     "type": "git",
     "url": "https://github.com/xuoe/redux-observers.git"
   },
+  "engines" : {
+      "npm" : ">6.9"
+  },
   "keywords": [
     "redux",
     "observer"
