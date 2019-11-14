@@ -49,7 +49,7 @@ export function observer(mapper, dispatcher, locals = {}) {
 
   let initialized = false
   let current
-  const observer = function (state, dispatch, globals) {
+  const observer = function (state, dispatch, options = {}) {
     const previous = current
     current = mapper(state)
 
@@ -57,20 +57,19 @@ export function observer(mapper, dispatcher, locals = {}) {
     // return their initial state.
     if (!initialized) {
       initialized = true
-      const skip = _.hasKey(locals, SKIP) ? !!locals[SKIP] : globals[SKIP]
+      const skip = _.hasKey(locals, SKIP) ? !!locals[SKIP] : options[SKIP]
       if (skip) {
         return
       }
     }
 
-    const equals = locals[EQUALS] || globals[EQUALS]
+    const equals = locals[EQUALS] || options[EQUALS]
     if (!equals(current, previous)) {
       dispatcher(dispatch, current, previous)
     }
   }
 
   observer[OBSERVER] = true
-
   return observer
 }
 
