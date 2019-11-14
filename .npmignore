@@ -8,4 +8,3 @@ coverage
 .travis.yml
 types/tsconfig.json
 types/*.test.ts
-.nyc_output
