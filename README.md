@@ -11,10 +11,7 @@ Observe [Redux](http://redux.js.org/) state changes and dispatch actions on chan
 Assuming you're using `npm` and a module bundler capable of consuming CommonJS
 modules:
 
-`npm install redux-observers --save`
-
-**Note** that the package supports only redux `3.x.x`. There are no plans for
-adding `4.x.x` support as of this writing.
+`npm install --save redux-observers`
 
 ## Usage
 First, create a `store` object as you normally would, then create the necessary
@@ -51,9 +48,10 @@ Creates an observer.
 
     If no `mapper` is provided, the entire store state is mapped by default.
 
-  - `dispatcher(dispatch, currentState, previousState)` *(Function)*
+  - `dispatcher(dispatch, currentState, [previousState])` *(Function)*
 
-    Called whenever the mapped-over state changes.
+    Called whenever the mapped-over state changes. Note that `previousState`
+    may be omitted from the `dispatcher` signature if desired.
 
   - `options` *(Object)*
 
@@ -110,9 +108,9 @@ state.
     return value must be a Boolean, which is used to determine whether a dispatcher
     should be called. Note that, by default, values are compared in a shallow
     manner via [`shallowEquals()`](#shallowequalsa-b--boolean), which should
-    satisfy the common use case.
+    satisfy most use cases.
 
 #### `shallowEquals(a, b) => Boolean`
 
-The default comparsion helper. It determines whether two state values (be they
-plain objects or primitive values) are equal.
+The default comparsion helper used by observers to determine whether two
+mapped-over values (be they plain objects or primitive values) are equal.
