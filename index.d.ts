@@ -1,17 +1,20 @@
-import { Dispatch, Store, Unsubscribe } from 'redux';
+import { Dispatch, Store, Unsubscribe, AnyAction } from 'redux';
 
 export function shallowEquals(a: any, b: any): boolean;
 
-interface Options {
+type Options = {
   skipInitialCall?: boolean;
   equals?: typeof shallowEquals;
 }
 
-type Observer<S = any, MS = any> = unknown;
-type Mapper<S = any, MS = any> = (state: S) => MS;
-type Dispatcher<MS> = (dispatch: Dispatch<MS>, currentState: MS, previousState: MS) => unknown;
+type Mapper<S, MS> = (state: S) => MS;
+type Observer<S = any> = (state: S, dispatch: Dispatch<AnyAction>) => void;
+type Dispatcher<MS> = (dispatch: Dispatch<AnyAction>, current: MS, previous?: MS) => void;
 
-export function observer<S, MS>(mapper: Mapper<S, MS>, dispatcher: Dispatcher<MS>, options?: Options): Observer<S, MS>;
-export function observer<S>(dispatcher: Dispatcher<S>, options?: Options): Observer<S, S>;
+interface ObserverCreator {
+    <S>(dispatcher: Dispatcher<S>, locals?: Options): Observer<S>
+    <S, MS>(mapper: Mapper<S, MS>, dispatcher: Dispatcher<MS>, locals?: Options): Observer<S>
+}
 
-export function observe<S>(store: Store<S>, observers: Observer[], options?: Options): Unsubscribe;
+export const observer: ObserverCreator
+export function observe<S>(store: Store<S>, observers: Observer[], globals?: Options): Unsubscribe;
