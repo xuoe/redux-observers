@@ -1,5 +1,5 @@
 import { observe, observer, shallowEquals } from '../src'
-import { createStore } from 'redux'
+import { createStore } from 'redux-4'
 import tape from 'tape'
 import sinon from 'sinon'
 

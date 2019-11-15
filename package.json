@@ -6,13 +6,14 @@
   "license": "MIT",
   "main": "lib/index.js",
   "jsnext:main": "src/index.js",
-  "types": "index.d.ts",
+  "types": "types",
   "scripts": {
     "build": "babel src --out-dir lib",
     "clean": "rimraf lib coverage",
     "lint": "eslint src test",
+    "lint:ts": "dtslint --localTs node_modules/typescript/lib types",
     "test": "tape -r @babel/register test",
-    "check": "npm run lint && npm run test",
+    "check": "npm run lint && npm run lint:ts && npm run test",
     "coverage": "nyc npm test",
     "coverage:lcov": "nyc --reporter text-lcov npm test",
     "coveralls": "npm run coverage:lcov | coveralls",
@@ -25,22 +26,26 @@
     "@babel/register": "^7.7.0",
     "babel-eslint": "^10.0.3",
     "coveralls": "^3.0.7",
+    "dtslint": "^2.0.2",
     "eslint": "^5.16.0",
     "nyc": "^14.1.1",
-    "redux": "^3.7.2",
+    "redux-3.4": "npm:redux@3.4.0",
+    "redux-3.7": "npm:redux@3.7.0",
+    "redux-4": "npm:redux@^4",
     "rimraf": "^3.0.0",
     "sinon": "^7.5.0",
-    "tape": "^4.11.0"
+    "tape": "^4.11.0",
+    "typescript": "^3.7.2"
   },
   "repository": {
     "type": "git",
     "url": "https://github.com/xuoe/redux-observers.git"
   },
+  "engines" : {
+      "npm" : ">6.9"
+  },
   "keywords": [
     "redux",
     "observer"
-  ],
-  "dependencies": {
-    "@types/redux": "^3.6.0"
-  }
+  ]
 }
