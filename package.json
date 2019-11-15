@@ -38,14 +38,14 @@
     "typescript": "^3.7.2"
   },
   "nyc": {
-      "temp-dir": "./coverage"
+    "temp-dir": "./coverage"
   },
   "repository": {
     "type": "git",
     "url": "https://github.com/xuoe/redux-observers.git"
   },
-  "engines" : {
-      "npm" : ">6.9"
+  "engines": {
+    "npm": ">6.9"
   },
   "keywords": [
     "redux",
