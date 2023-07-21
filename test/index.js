@@ -330,3 +330,53 @@ tape('integration', t => {
 
   t.end()
 })
+
+tape('observers modifying state', t => {
+  const store = createStore((state = { a: null, b: null, c: null }, action) => {
+    switch (action.type) {
+      case 'setA':
+        return { ...state, a: action.payload };
+      case 'setB':
+        return { ...state, b: action.payload };
+      case 'setC':
+        return { ...state, c: action.payload };
+    }
+    return state;
+  }, {})
+
+  const b$observeA = observer(
+    (state) => state.a,
+    (dispatch, a) => {
+      dispatch({ type: 'setB', payload: a.foo });
+    },
+  );
+  const c$observeB = observer(
+    (state) => state.b,
+    (dispatch, b) => {
+      t.doesNotThrow(
+        () => dispatch({ type: 'setC', payload: b.bar }),
+        /TypeError: Cannot read properties of undefined (reading 'bar')/,
+        'C observer did not see updated B state'
+      )
+    },
+  );
+
+  observe(store, [b$observeA, c$observeB])
+
+  store.dispatch({
+    type: 'setA',
+    payload: {
+      foo: {
+        bar: 'quux',
+      },
+    },
+  })
+
+  t.deepEqual(
+    store.getState(),
+    { a: { foo: { bar: 'quux' } }, b: { bar: 'quux' }, c: 'quux' },
+    'state refreshed between observers'
+  )
+
+  t.end()
+})
