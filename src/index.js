@@ -31,10 +31,9 @@ export function observe(store, observers, options = {}) {
   }, {})
 
   const { dispatch, getState, subscribe } = store
-  const apply = state => {
-    observers.forEach(fn => { fn(state, dispatch, globals) })
+  const listen = () => {
+    observers.forEach(fn => { fn(getState(), dispatch, globals) })
   }
-  const listen = () => { apply(getState()) }
 
   const unsubscribe = subscribe(listen)
   listen()
