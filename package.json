@@ -14,7 +14,7 @@
     "test": "npx tape -r @babel/register test",
     "check": "npm run lint && npm run lint:ts && npm run test",
     "coverage": "npx nyc npm test",
-    "coverage:lcov": "npx nyc --reporter text-lcov npm test",
+    "coverage:lcov": "npx nyc --reporter lcov npm test",
     "prepublish": "npm run clean && npm run check && npm run build"
   },
   "devDependencies": {

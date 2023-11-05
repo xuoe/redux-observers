@@ -1,6 +1,6 @@
 # redux-observers
 
-[![Build Status](https://img.shields.io/travis/xuoe/redux-observers.svg?style=flat-square)](https://travis-ci.org/xuoe/redux-observers)
+[![Build Status](https://img.shields.io/github/actions/workflow/status/xuoe/redux-observers/ci.yml?style=flat-square)](https://github.com/xuoe/redux-observers/actions/workflows/ci.yml)
 [![Coverage Status](https://img.shields.io/coveralls/xuoe/redux-observers.svg?style=flat-square)](https://coveralls.io/r/xuoe/redux-observers)
 [![NPM Version](https://img.shields.io/npm/v/redux-observers.svg?style=flat-square)](https://www.npmjs.com/package/redux-observers)
 
