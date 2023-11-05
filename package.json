@@ -20,22 +20,22 @@
     "prepublishOnly": "npm run clean && npm run check && npm run build"
   },
   "devDependencies": {
-    "@babel/cli": "^7.7.0",
-    "@babel/core": "^7.7.2",
-    "@babel/preset-env": "^7.7.1",
-    "@babel/register": "^7.7.0",
-    "babel-eslint": "^10.0.3",
-    "coveralls": "^3.0.7",
-    "dtslint": "^2.0.2",
-    "eslint": "^5.16.0",
+    "@babel/cli": "^7.23.0",
+    "@babel/core": "^7.23.2",
+    "@babel/eslint-parser": "^7.22.15",
+    "@babel/preset-env": "^7.23.2",
+    "@babel/register": "^7.22.15",
+    "coveralls": "^3.1.1",
+    "dtslint": "^2.0.6",
+    "eslint": "^8.53.0",
     "nyc": "^14.1.1",
-    "redux-3.4": "npm:redux@3.4.0",
-    "redux-3.7": "npm:redux@3.7.0",
-    "redux-4": "npm:redux@^4",
-    "rimraf": "^3.0.0",
+    "redux-3.4": "npm:redux@^3.4.2",
+    "redux-3.7": "npm:redux@^3.7.2",
+    "redux-4": "npm:redux@^4.2.1",
+    "rimraf": "^3.0.2",
     "sinon": "^7.5.0",
-    "tape": "^4.11.0",
-    "typescript": "^3.7.2"
+    "tape": "^4.17.0",
+    "typescript": "^3.9.10"
   },
   "nyc": {
     "temp-dir": "./coverage"
