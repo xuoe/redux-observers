@@ -349,17 +349,15 @@ tape('observers modifying state', t => {
     (dispatch, a) => {
       dispatch({ type: 'setB', payload: a.foo });
     },
-  );
+  )
+
   const c$observeB = observer(
     (state) => state.b,
     (dispatch, b) => {
-      t.doesNotThrow(
-        () => dispatch({ type: 'setC', payload: b.bar }),
-        /TypeError: Cannot read properties of undefined (reading 'bar')/,
-        'C observer did not see updated B state'
-      )
-    },
-  );
+      t.ok(b.bar, 'state refreshed between observers')
+      dispatch({ type: 'setC', payload: b.bar })
+    }
+  )
 
   observe(store, [b$observeA, c$observeB])
 
